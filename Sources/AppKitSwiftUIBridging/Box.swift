@@ -14,16 +14,18 @@ public struct Box<Content>: NSViewRepresentable where Content: View {
   public typealias NSViewType = NSBox
   private var containing: Content
   private var title: String
+  private var hostingView: NSHostingView<Content>
   
   public func makeNSView(context: NSViewRepresentableContext<Box>) -> NSBox {
     let box = NSBox()
-    let hostingView = NSHostingView(rootView: containing)
     box.contentView = hostingView
     box.title = title
     return box
   }
   
-  public func updateNSView(_ nsView: NSBox, context: NSViewRepresentableContext<Box>) {}
+  public func updateNSView(_ nsView: NSBox, context: NSViewRepresentableContext<Box>) {
+    nsView.contentView = self.hostingView
+  }
   
   /// Initialise a `Box` with the given header and contents.
   ///
@@ -32,5 +34,6 @@ public struct Box<Content>: NSViewRepresentable where Content: View {
   public init(header: String, contents: () -> Content) {
     self.title = header
     self.containing = contents()
+    self.hostingView = NSHostingView(rootView: containing)
   }
 }
